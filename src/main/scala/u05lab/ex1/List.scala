@@ -72,12 +72,6 @@ enum List[A]:
       case h :: t if pred(h) => t span(pred)
       case h :: t => (List(h) ,this)
 
-//    case h :: t  if (t filter(pred(_))).length > 0 => t span(pred)
-
-//    case h :: t if !pred(h)=> t span(pred)
-//    case h :: t :: b if !pred(t) => b span(pred)
-//    case h :: t  => (this, t)
-
   /** @throws UnsupportedOperationException if the list is empty */
   def reduce(op: (A, A) => A): A = this match
     case Nil() => throw UnsupportedOperationException()
@@ -87,6 +81,9 @@ enum List[A]:
   def takeRight(n: Int): List[A] =
     this.zipRight.filter((el, posix) => posix >= this.length - n).map((el, posix) => el)
 
+
+  def collect(pred : PartialFunction[A,A]) :  List[A] =
+    this filter(pred.isDefinedAt(_)) map(pred.andThen(pred)) //ho letto la documentazione
 // Factories
 object List:
 
@@ -100,13 +97,15 @@ object List:
 
 @main def checkBehaviour(): Unit =
   val reference = List(1, 2, 3, 4)
-//  println(reference)
-//  println(reference.zipRight) // List((1, 0), (2, 1), (3, 2), (4, 3))
-//  println(reference.partition(_ % 2 == 0)) // (List(2, 4), List(1, 3))
+  val sample = List(1, 4, "Hello", 42, "brother", null, List("?"), "!")
+  println(reference)
+  println(reference.zipRight) // List((1, 0), (2, 1), (3, 2), (4, 3))
+  println(reference.partition(_ % 2 == 0)) // (List(2, 4), List(1, 3))
 //  println(reference.span(_ % 2 != 0)) // (List(1), List(2, 3, 4))
 //  println(reference.span(_ < 3)) // (List(1, 2), List(3, 4))
-//  println(reference.reduce(_ + _)) // 10
-//  try Nil.reduce[Int](_ + _)
-//  catch case ex: Exception => println(ex) // prints exception
-//  println(List(10).reduce(_ + _)) // 10
+  println(reference.reduce(_ + _)) // 10
+  try Nil.reduce[Int](_ + _)
+  catch case ex: Exception => println(ex) // prints exception
+  println(List(10).reduce(_ + _)) // 10
   println(reference.takeRight(3)) // List(2, 3, 4)
+  println(sample.collect{ case str : String => str})
