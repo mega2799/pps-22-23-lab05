@@ -28,7 +28,7 @@ class ConferenceReviewingTest:
 //    conferenceReviewing.reviews foreach (println(_))
 
   @Test def isPopulatedInit() =
-     assertEquals(10,conferenceReviewing.reviews.length)
+     assertEquals(11,conferenceReviewing.reviews.length)
 
   @Test def testOrderedScores() =
     // l'articolo 2 ha preso su RELEVANCE i due voti 4,9

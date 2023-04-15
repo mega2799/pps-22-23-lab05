@@ -75,18 +75,18 @@ case class Conference(/*article: Int, scores: Map[Question, Int]*/) extends Conf
     ))
 
   override def orderedScores(article: Int, question: Question): List[Int] =
-    reviews filter(_.x == article) map(_.y.getOrElse(question, throw NoSuchFieldError())) sortWith(_<_)
+    reviews filter(_.x == article) map(_.y(question)) sortWith(_<_)
   override def averageFinalScore(article: Int): Double =
     (reviews.filter(_.x == article).map(_.y(FINAL)).sum[Int] : Double) / reviews.filter(_.x == article).length
 
 
   override def acceptedArticles(): Set[Int] =
-    (reviews filter((p) => averageFinalScore(p.x) > 5.0 && p.y.getOrElse(RELEVANCE, throw NoSuchFieldError()) >= 8) map(_.x)).toSet
+    (reviews filter((p) => averageFinalScore(p.x) > 5.0 && p.y(RELEVANCE) >= 8) map(_.x)).toSet
 
   override def sortedAcceptedArticles(): List[Pair[Int, Double]] =
     (acceptedArticles() map(p => Pair(p, averageFinalScore(p)))).toList sortWith(_.y < _.y)
 
   def averageWeightedFinalScore(index : Int) : Double =
-    ((reviews filter(_.x == index) map(p => p.y.getOrElse(FINAL, throw NoSuchFieldError()) * p.y.getOrElse(CONFIDENCE, throw NoSuchFieldError()) / 10.0)).sum / reviews.filter(_.x == index).length)
+    ((reviews filter(_.x == index) map(p => p.y(FINAL) * p.y(CONFIDENCE) / 10.0)).sum / reviews.filter(_.x == index).length)
   override def averageWeightedFinalScoreMap(): Map[Int, Double] =
     (reviews map(p => p.x -> averageWeightedFinalScore(p.x))).toMap
